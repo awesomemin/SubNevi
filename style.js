@@ -26,5 +26,8 @@ export const styles = StyleSheet.create({
   },
   movingStationText: {
     fontSize: 20,
-  }
+  },
+  announceText: {
+    textAlign: "center",
+  },
 });

@@ -8,10 +8,13 @@ import { styles } from './style';
 import { stationRegions } from "./stations";
 import { Entypo } from "@expo/vector-icons";
 
-
 export default function App() {
+  const [isStarted, setIsStarted] = useState(false);
   const [isStop, setIsStop] = useState(true);
-  const [currentStation, setCurrentStation] = useState("화곡역");
+  const [currentStation, setCurrentStation] = useState("");
+  const [movingPrevStation, setMovingPrevStation] = useState("");
+  const [movingNextStation, setMovingNextStation] = useState("");
+  const [isUpper, setIsUpper] = useState();
 
   const getLocationPermission = async () => {
     await Location.requestForegroundPermissionsAsync();
@@ -24,9 +27,18 @@ export default function App() {
       return;
     }
     if (Location.GeofencingEventType.Enter === eventType) {
-      
+      setIsStarted(true);
+      setIsStop(true);
+      setCurrentStation(region.identifier);
     } else if (Location.GeofencingEventType.Exit === eventType) {
-      
+      setIsStop(false);
+      setMovingPrevStation(currentStation);
+      stationRegions.forEach((value, index) => {
+        if(currentStation === value.identifier) {
+          setMovingNextStation(stationRegions[index+1]);
+        }
+      })
+
     }
   })
 
@@ -37,30 +49,33 @@ export default function App() {
   useEffect(() => {
     getLocationPermission();
     trackLocation();
+    stationRegions.forEach((value, index) => {
+      if(currentStation)
+      console.log(value.identifier);
+    })
   }, [])
 
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
       <View style={styles.locationStatus}>
-        {isStop ? (
+        {isStarted ? (isStop ? (
           <Text style={styles.currentStationText}>{currentStation}에 정차 중입니다. </Text>
         ) : (
           <View style={styles.movingStatusIndicator}>
             <View>
-              <Text style={styles.movingStationText}>화곡역</Text>
+              <Text style={styles.movingStationText}>{movingPrevStation}</Text>
             </View>
             <View>
               <Entypo name="arrow-long-right" size={36} color="black" />
             </View>
             <View>
-              <Text style={styles.movingStationText}>까치산역</Text>
+              <Text style={styles.movingStationText}>{movingNextStation}</Text>
             </View>
           </View>
-        )}
+        )) : (<Text style={styles.announceText}>다음 정차역부터 정상 작동합니다.</Text>)}
       </View>
       <View style={styles.select}>
-        
       </View>
     </View>
   );

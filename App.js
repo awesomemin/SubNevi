@@ -5,49 +5,59 @@ import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
 import { useEffect, useState } from 'react';
 import { styles } from './style';
+import { stationRegions } from "./stations";
+import { Entypo } from "@expo/vector-icons";
 
 
 export default function App() {
-  const [currentStation, setCurrentStation] = useState("loading...");
-  const [nextStation, setNextStation] = useState("loading...");
+  const [isStop, setIsStop] = useState(true);
+  const [currentStation, setCurrentStation] = useState("화곡역");
 
   const getLocationPermission = async () => {
     await Location.requestForegroundPermissionsAsync();
     await Location.requestBackgroundPermissionsAsync();
   }
 
-  const defineTask = () => {
-    TaskManager.defineTask("TRACKING_USER_LOCATION", ({ data: {eventType, region}, error }) => {
-      if (error) {
-        return;
-      }
-      if (Location.GeofencingEventType.Enter === eventType) {
-
-      } else if (Location.GeofencingEventType.Exit === eventType) {
-        
-      }
-    })
-  }
+  TaskManager.defineTask("TRACKING_USER_LOCATION", ({ data: {eventType, region}, error }) => {
+    if (error) {
+      console.log(error);
+      return;
+    }
+    if (Location.GeofencingEventType.Enter === eventType) {
+      
+    } else if (Location.GeofencingEventType.Exit === eventType) {
+      
+    }
+  })
 
   const trackLocation = async () => {
-    defineTask();
-    await Location.startGeofencingAsync("TRACKING_USER_LOCATION",)
+    await Location.startGeofencingAsync("TRACKING_USER_LOCATION", stationRegions);
   }
 
   useEffect(() => {
     getLocationPermission();
+    trackLocation();
   }, [])
 
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
       <View style={styles.locationStatus}>
-        <View style={styles.currentStation}>
-          <Text style={styles.currentStationText}>현재 역 : {currentStation}</Text>
-        </View>
-        <View style={styles.nextStation}>
-          <Text style={styles.nextStationText}>다음 역 : {nextStation}</Text>
-        </View>
+        {isStop ? (
+          <Text style={styles.currentStationText}>{currentStation}에 정차 중입니다. </Text>
+        ) : (
+          <View style={styles.movingStatusIndicator}>
+            <View>
+              <Text style={styles.movingStationText}>화곡역</Text>
+            </View>
+            <View>
+              <Entypo name="arrow-long-right" size={36} color="black" />
+            </View>
+            <View>
+              <Text style={styles.movingStationText}>까치산역</Text>
+            </View>
+          </View>
+        )}
       </View>
       <View style={styles.select}>
         

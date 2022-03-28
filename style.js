@@ -11,22 +11,20 @@ export const styles = StyleSheet.create({
     borderBottomColor: "black",
     borderBottomWidth: 5,
     paddingHorizontal: 10,
+    justifyContent: "center",
   },
   select: {
     flex: 4,
   },
-  currentStation: {
-    flex:1,
-    justifyContent: "center",
-  },
-  nextStation: {
-    flex:1,
-    justifyContent: "center",
-  },
   currentStationText: {
     fontSize: 20,
+    textAlign: "center",
   },
-  nextStationText: {
+  movingStatusIndicator: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+  },
+  movingStationText: {
     fontSize: 20,
   }
 });
